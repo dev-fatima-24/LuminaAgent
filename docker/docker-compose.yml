@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_CONTRACT_ID=${CONTRACT_ID}
+      - REACT_APP_RPC_URL=${RPC_URL:-https://soroban-testnet.stellar.org}
+      - REACT_APP_NETWORK_PASSPHRASE=${NETWORK_PASSPHRASE:-Test SDF Network ; September 2015}
+    command: serve -s frontend/build -l 3000
+
+  oracle:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - ORACLE_SECRET=${ORACLE_SECRET}
+      - CONTRACT_ID=${CONTRACT_ID}
+      - WALLET_ID=${WALLET_ID:-0}
+      - RULE_IDS=${RULE_IDS:-0}
+      - SIGNAL_URL=${SIGNAL_URL}
+      - POLL_INTERVAL_MS=${POLL_INTERVAL_MS:-30000}
+      - MAX_EXEC_PER_HOUR=${MAX_EXEC_PER_HOUR:-10}
+      - NETWORK_PASSPHRASE=${NETWORK_PASSPHRASE:-Test SDF Network ; September 2015}
+      - RPC_URL=${RPC_URL:-https://soroban-testnet.stellar.org}
+    command: node oracle/index.js
+    depends_on:
+      - frontend
+    restart: unless-stopped

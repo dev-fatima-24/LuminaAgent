@@ -1,0 +1,7 @@
+contracts/target/
+node_modules/
+.env
+dist/
+build/
+frontend/build/
+*.wasm
